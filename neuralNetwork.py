@@ -45,8 +45,7 @@ class NeuralNetwork:
         WsDerivs[len(WsDerivs) - 1] = zDeriv.dot(self.As[len(self.As) - 2].T) / self.epoch
         BsDerivs[len(BsDerivs) - 1] = zDeriv / self.epoch
 
-
-        for i in range(len(self.Ws)):
+        for i in range(len(self.Ws) - 1):
             zDeriv = self.Ws[len(self.Ws) - 1 - i].T.dot(zDeriv) * map_drelu(self.Zs[len(self.Zs) - 2 - i])
 
             WsDerivs[len(WsDerivs) - 2 - i] = zDeriv.dot(self.As[len(self.As) - 3 - i].T) * 1.00 / self.epoch
@@ -56,17 +55,6 @@ class NeuralNetwork:
 
 
     def update_weights(self, WsDerivs, BsDerivs):
-        '''
-        print(' --- UPDATE --- ')
-        print(WsDerivs)
-        for i in range(len(self.Ws)):
-            print(f'    --- L{i} --- ')
-            print(
-                '   Ws: \n  ', WsDerivs[i], '\n',
-            )
-        print(' --- UPDATE ---  \n\n\n\n')
-        '''
-
         for i in range(len(self.Ws)):
             self.Ws[i] = self.Ws[i] - (WsDerivs[i] * self.learning_rate)
             self.Bs[i] = self.Bs[i] - (BsDerivs[i] * self.learning_rate)
@@ -75,7 +63,7 @@ class NeuralNetwork:
         return (self.As[len(self.As) - 1] - target) * 2.00
 
     def set_input(self, x):
-        self.As[0] = np.array([[x]])
+        self.As[0] = x
 
     def get_output(self):
         return self.As[len(self.As) - 1]

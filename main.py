@@ -1,14 +1,21 @@
 import numpy as np
 import neuralNetwork
 
-nn = neuralNetwork.NeuralNetwork([1, 50, 1], 1, 0.0001)
+nn = neuralNetwork.NeuralNetwork([6, 10, 6], 1, 0.1)
 
-for _ in range(500000):
-    # set input
-    nn.set_input(0)
+for _ in range(1000):
+    nn.set_input(
+        np.array(
+            [[0], [1], [0], [1], [0], [1]]
+        )
+    )
 
     nn.forward()
 
     print('Output: ', nn.get_output())
 
-    nn.backward(np.array([[1]]))
+    nn.backward(
+        np.array(
+            [[1], [0], [1], [0], [1], [0]]
+        )
+    )
