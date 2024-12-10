@@ -40,7 +40,7 @@ class NeuralNetwork:
         WsDerivs = [np.array([[]]) for _ in range(len(self.Ws))]
         BsDerivs = [np.array([[]]) for _ in range(len(self.Bs))]
 
-        zDeriv = self.costDerivative(target)
+        zDeriv = self.cost_derivative(target)
 
         WsDerivs[len(WsDerivs) - 1] = zDeriv.dot(self.As[len(self.As) - 2].T) / self.epoch
         BsDerivs[len(BsDerivs) - 1] = zDeriv / self.epoch
@@ -59,8 +59,11 @@ class NeuralNetwork:
             self.Ws[i] = self.Ws[i] - (WsDerivs[i] * self.learning_rate)
             self.Bs[i] = self.Bs[i] - (BsDerivs[i] * self.learning_rate)
 
-    def costDerivative(self, target):
+    def cost_derivative(self, target):
         return (self.As[len(self.As) - 1] - target) * 2.00
+
+    def get_cost(self, target):
+        return (self.As[len(self.As) - 1] - target) ** 2
 
     def set_input(self, x):
         self.As[0] = x
@@ -69,14 +72,13 @@ class NeuralNetwork:
         return self.As[len(self.As) - 1]
 
     def print_state(self):
-
         for i in range(len(self.Ws)):
             print(f'    --- L{i} --- ')
             print(
-                '   Ws: \n  ', self.Ws[i], '\n\n',
-                '   Bs: \n  ', self.Bs[i], '\n\n',
-                '   As: \n  ', self.As[i + 1], '\n\n',
-                '   Zs: \n  ', self.Zs[i], '\n\n',
+                '   Ws: \n  ', self.Ws[i].shape, '\n\n',
+                '   Bs: \n  ', self.Bs[i].shape, '\n\n',
+                '   As: \n  ', self.As[i + 1].shape, '\n\n',
+                '   Zs: \n  ', self.Zs[i].shape, '\n\n',
             )
 
 def map_lineaire(xs):
