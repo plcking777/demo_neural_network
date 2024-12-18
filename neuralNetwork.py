@@ -16,8 +16,8 @@ class NeuralNetwork:
             nodes = layers[i]
             next_nodes = layers[i + 1]
 
-            self.Ws.append(np.random.rand(next_nodes, nodes))
-            self.Bs.append(np.random.rand(next_nodes, 1))
+            self.Ws.append(np.random.rand(next_nodes, nodes) - 0.5)
+            self.Bs.append(np.random.rand(next_nodes, 1) - 0.5)
         self.As = [np.array([[]]) for _ in range(len(layers))]
         self.Zs = [np.array([[]]) for _ in range(len(layers) - 1)]
 
@@ -43,13 +43,16 @@ class NeuralNetwork:
         zDeriv = self.cost_derivative(target)
 
         WsDerivs[len(WsDerivs) - 1] = zDeriv.dot(self.As[len(self.As) - 2].T) / self.epoch
+
+        # TODO why does screen go full green on np.sum
+        #BsDerivs[len(BsDerivs) - 1] = np.sum(zDeriv) / self.epoch
         BsDerivs[len(BsDerivs) - 1] = zDeriv / self.epoch
 
         for i in range(len(self.Ws) - 1):
             zDeriv = self.Ws[len(self.Ws) - 1 - i].T.dot(zDeriv) * map_drelu(self.Zs[len(self.Zs) - 2 - i])
 
             WsDerivs[len(WsDerivs) - 2 - i] = zDeriv.dot(self.As[len(self.As) - 3 - i].T) * 1.00 / self.epoch
-            BsDerivs[len(WsDerivs) - 2 - i] = zDeriv / self.epoch
+            BsDerivs[len(WsDerivs) - 2 - i] = np.sum(zDeriv) / self.epoch
 
         self.update_weights(WsDerivs, BsDerivs)
 
