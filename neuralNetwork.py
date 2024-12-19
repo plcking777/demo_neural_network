@@ -46,7 +46,8 @@ class NeuralNetwork:
 
         # TODO why does screen go full green on np.sum
         #BsDerivs[len(BsDerivs) - 1] = np.sum(zDeriv) / self.epoch
-        BsDerivs[len(BsDerivs) - 1] = zDeriv / self.epoch
+        BsDerivs[len(BsDerivs) - 1] = np.sum(zDeriv, axis=0) / self.epoch
+
 
         for i in range(len(self.Ws) - 1):
             zDeriv = self.Ws[len(self.Ws) - 1 - i].T.dot(zDeriv) * map_drelu(self.Zs[len(self.Zs) - 2 - i])

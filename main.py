@@ -6,7 +6,7 @@ import sys
 
 
 
-UPSCALE = True
+UPSCALE = False
 
 RESOLUTION = 28
 
@@ -57,6 +57,8 @@ while running:
                 nn.set_input(custom_inp)
                 nn.forward()
                 out = nn.get_output()
+                #print(out.shape)
+
                 val = min(max(out[0][0], 0), 255)
                 pg.draw.rect(screen, (0, val, 0), (x * rect_size, y * rect_size, rect_size, rect_size))
     else:
@@ -66,6 +68,8 @@ while running:
         nn.set_input(custom_inp)
         nn.forward()
         out = nn.get_output()
+        #print(out)
+
         for y in range(28):
             for x in range(28):
                 val = min(max(out[0][(x + y * 28)], 0), 255)
