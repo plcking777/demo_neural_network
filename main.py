@@ -1,5 +1,4 @@
 import numpy as np
-from pygame.event import custom_type
 import neuralNetwork
 import pygame as pg
 import sys
@@ -16,7 +15,7 @@ RESOLUTION = 28
 
 data = np.array(np.loadtxt('/home/woutv/Documents/numbas/numba0.csv', delimiter=',', dtype=np.uint8))
 
-nn = neuralNetwork.NeuralNetwork([2, 10, 1], RESOLUTION*RESOLUTION, 0.1)
+nn = neuralNetwork.NeuralNetwork([2, 20, 1], RESOLUTION*RESOLUTION, 0.001)
 
 
 
@@ -78,4 +77,36 @@ while running:
     pg.display.flip()
 
 pg.quit()
+
+
+
+out = ''
+
+custom_inp = np.array([[(x%28) / 28.0, int(x/28) / 28.0] for x in range(28*28)]).T
+nn.set_input(custom_inp)
+nn.forward()
+nn_out = nn.get_output()
+for i in range(28 * 28):
+    out += str(min(max(nn_out[0][i], 0), 255)) + ', '
+
+out += '\n\n\n\n\n\n\n\n\n'
+out += '\n----------------------------------------------------\n'
+out += '\n\n\n\n\n\n\n\n\n'
+
+for y in range(28):
+    for x in range(28):
+        custom_inp = np.array([[x / 28.0], [y / 28.0]])
+        nn.set_input(custom_inp)
+        nn.forward()
+        nn_out = nn.get_output()
+        out += str(min(max(nn_out[0][0], 0), 255)) + ', '
+
+
+
+with open("OUT.log", "w") as file:
+    file.write(out)
+file.close()
+
+
+
 sys.exit()

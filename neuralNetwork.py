@@ -46,13 +46,13 @@ class NeuralNetwork:
 
         # TODO why does screen go full green on np.sum
         #BsDerivs[len(BsDerivs) - 1] = np.sum(zDeriv) / self.epoch
-        BsDerivs[len(BsDerivs) - 1] = np.sum(zDeriv, axis=0) / self.epoch
+        BsDerivs[len(BsDerivs) - 1] = np.sum(zDeriv, axis=1) / self.epoch
 
 
         for i in range(len(self.Ws) - 1):
             zDeriv = self.Ws[len(self.Ws) - 1 - i].T.dot(zDeriv) * map_drelu(self.Zs[len(self.Zs) - 2 - i])
 
-            WsDerivs[len(WsDerivs) - 2 - i] = zDeriv.dot(self.As[len(self.As) - 3 - i].T) * 1.00 / self.epoch
+            WsDerivs[len(WsDerivs) - 2 - i] = zDeriv.dot(self.As[len(self.As) - 3 - i].T) / self.epoch
             BsDerivs[len(WsDerivs) - 2 - i] = np.sum(zDeriv) / self.epoch
 
         self.update_weights(WsDerivs, BsDerivs)
@@ -67,7 +67,7 @@ class NeuralNetwork:
         return (self.As[len(self.As) - 1] - target) * 2.00
 
     def get_cost(self, target):
-        return (self.As[len(self.As) - 1] - target) ** 2
+        return np.sum((self.As[len(self.As) - 1] - target) ** 2) / self.epoch
 
     def set_input(self, x):
         self.As[0] = x
@@ -95,6 +95,7 @@ def map_relu(xs):
     return xs
 
 def map_drelu(xs):
+    out = np.empty_like(xs)
     for i in range(len(xs)):
         for j in range(len(xs[i])):
             if xs[i][j] <= 0.00:
