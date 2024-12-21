@@ -1,5 +1,5 @@
 import numpy as np
-
+import math
 
 
 class NeuralNetwork:
@@ -23,12 +23,12 @@ class NeuralNetwork:
 
     def forward(self):
         prevAct = self.As[0]
-
         for i in range(len(self.Ws)):
             Z = self.Ws[i].dot(prevAct) + self.Bs[i]
 
             if i == len(self.Ws) - 1:
-                prevAct = map_lineaire(Z)
+                #prevAct = map_lineaire(Z)
+                prevAct = map_sigmoid(Z)
             else:
                 prevAct = map_relu(Z)
 
@@ -40,14 +40,10 @@ class NeuralNetwork:
         WsDerivs = [np.array([[]]) for _ in range(len(self.Ws))]
         BsDerivs = [np.array([[]]) for _ in range(len(self.Bs))]
 
-        zDeriv = self.cost_derivative(target)
+        zDeriv = self.cost_derivative(target) * map_dsigmoid(self.Zs[len(self.Zs) - 1])
 
         WsDerivs[len(WsDerivs) - 1] = zDeriv.dot(self.As[len(self.As) - 2].T) / self.epoch
-
-        # TODO why does screen go full green on np.sum
-        #BsDerivs[len(BsDerivs) - 1] = np.sum(zDeriv) / self.epoch
         BsDerivs[len(BsDerivs) - 1] = np.sum(zDeriv, axis=1) / self.epoch
-
 
         for i in range(len(self.Ws) - 1):
             zDeriv = self.Ws[len(self.Ws) - 1 - i].T.dot(zDeriv) * map_drelu(self.Zs[len(self.Zs) - 2 - i])
@@ -60,8 +56,8 @@ class NeuralNetwork:
 
     def update_weights(self, WsDerivs, BsDerivs):
         for i in range(len(self.Ws)):
-            self.Ws[i] = self.Ws[i] - (WsDerivs[i] * self.learning_rate)
-            self.Bs[i] = self.Bs[i] - (BsDerivs[i] * self.learning_rate)
+            self.Ws[i] = self.Ws[i] + (WsDerivs[i] * self.learning_rate)
+            self.Bs[i] = self.Bs[i] + (BsDerivs[i] * self.learning_rate)
 
     def cost_derivative(self, target):
         return (self.As[len(self.As) - 1] - target) * 2.00
@@ -95,11 +91,28 @@ def map_relu(xs):
     return xs
 
 def map_drelu(xs):
-    out = np.empty_like(xs)
     for i in range(len(xs)):
         for j in range(len(xs[i])):
             if xs[i][j] <= 0.00:
                 xs[i][j] = 0.00
             else:
                 xs[i][j] = 1
+    return xs
+
+
+def sigmoid(x):
+    return 1 / (1 + math.exp(-x))
+
+def map_sigmoid(xs):
+    for i in range(len(xs)):
+        for j in range(len(xs[i])):
+            xs[i][j] = sigmoid(-xs[i][j])
+
+    return xs
+
+def map_dsigmoid(xs):
+    for i in range(len(xs)):
+        for j in range(len(xs[i])):
+            xs[i][j] = sigmoid(xs[i][j]) * (1 - sigmoid(xs[i][j]))
+
     return xs
