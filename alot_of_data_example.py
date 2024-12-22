@@ -2,7 +2,6 @@ import neuralNetwork
 import numpy as np
 
 
-
 train_data_inp = np.array([
     [0, 0],
     [0, 0.2],
@@ -50,8 +49,7 @@ train_data_out = np.array([
 ]).T
 
 
-
-nn = neuralNetwork.NeuralNetwork([2, 10, 10, 1], len(train_data_inp), 0.1)
+nn = neuralNetwork.NeuralNetwork([2, 20, 20, 1], len(train_data_inp), 0.01)
 
 for i in range(100000):
     nn.set_input(train_data_inp)
