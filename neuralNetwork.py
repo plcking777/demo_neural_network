@@ -16,8 +16,10 @@ class NeuralNetwork:
             nodes = layers[i]
             next_nodes = layers[i + 1]
 
-            self.Ws.append(np.random.rand(next_nodes, nodes) - 0.5)
-            self.Bs.append(np.random.rand(next_nodes, 1) - 0.5)
+            #self.Ws.append(np.random.rand(next_nodes, nodes) - 0.5)
+            #self.Bs.append(np.random.rand(next_nodes, 1) - 0.5)
+            self.Ws.append(np.random.randn(next_nodes, nodes) * np.sqrt(2 / next_nodes))
+            self.Bs.append(np.random.randn(next_nodes, 1) * np.sqrt(2 / next_nodes))
         self.As = [np.array([[]]) for _ in range(len(layers))]
         self.Zs = [np.array([[]]) for _ in range(len(layers) - 1)]
 
@@ -27,7 +29,6 @@ class NeuralNetwork:
             Z = self.Ws[i].dot(prevAct) + self.Bs[i]
 
             if i == len(self.Ws) - 1:
-                #prevAct = map_lineaire(Z)
                 prevAct = map_sigmoid(Z)
             else:
                 prevAct = map_relu(Z)
@@ -48,8 +49,10 @@ class NeuralNetwork:
         for i in range(len(self.Ws) - 1):
             zDeriv = self.Ws[len(self.Ws) - 1 - i].T.dot(zDeriv) * map_drelu(self.Zs[len(self.Zs) - 2 - i])
 
-            WsDerivs[len(WsDerivs) - 2 - i] = zDeriv.dot(self.As[len(self.As) - 3 - i].T) / self.epoch
-            BsDerivs[len(WsDerivs) - 2 - i] = np.sum(zDeriv) / self.epoch
+            #WsDerivs[len(WsDerivs) - 2 - i] = zDeriv.dot(self.As[len(self.As) - 3 - i].T) / self.epoch
+            #BsDerivs[len(WsDerivs) - 2 - i] = np.sum(zDeriv) / self.epoch
+            WsDerivs[len(WsDerivs) - 2 - i] = np.clip(zDeriv.dot(self.As[len(self.As) - 3 - i].T) / self.epoch, -1, 1)
+            BsDerivs[len(WsDerivs) - 2 - i] = np.clip(np.sum(zDeriv) / self.epoch, -1, 1)
 
         self.update_weights(WsDerivs, BsDerivs)
 
@@ -87,7 +90,8 @@ def map_lineaire(xs):
 def map_relu(xs):
     for i in range(len(xs)):
         for j in range(len(xs[i])):
-            xs[i][j] = max(0.00, xs[i][j])
+            #xs[i][j] = max(0.00, xs[i][j])
+            xs[i][j] = max(0.01 * xs[i][j], xs[i][j])
     return xs
 
 def map_drelu(xs):
