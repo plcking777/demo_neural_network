@@ -51,7 +51,7 @@ train_data_out = np.array([
 
 nn = neuralNetwork.NeuralNetwork([2, 20, 20, 1], len(train_data_inp), 0.01)
 
-for i in range(100000):
+for i in range(10000):
     nn.set_input(train_data_inp)
     nn.forward()
     cost = nn.get_cost(train_data_out)
@@ -64,3 +64,19 @@ nn.set_input(train_data_inp)
 nn.forward()
 
 print('out: ', nn.get_output())
+
+
+
+
+train_data_inp = np.array([[0.00, 0.00]]).T
+nn.set_input(train_data_inp)
+nn.forward()
+
+print('should be 0', nn.get_output())
+
+
+train_data_inp = np.array([[0.00, 0.20]]).T
+nn.set_input(train_data_inp)
+nn.forward()
+
+print('should be 1', nn.get_output())
