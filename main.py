@@ -2,13 +2,13 @@ import numpy as np
 import neuralNetwork
 import pygame as pg
 import sys
-
+import random
 
 
 UPSCALE = False
 
 RESOLUTION = 28
-
+BATCH_SIZE = 16
 
 
 ### NN - START
@@ -16,7 +16,7 @@ RESOLUTION = 28
 data = np.array(np.loadtxt('/home/woutv/Documents/numbas/numba0.csv', delimiter=',', dtype=np.uint8)) / 255
 
 
-nn = neuralNetwork.NeuralNetwork([2, 32, 5, 1], RESOLUTION*RESOLUTION, 0.01)
+nn = neuralNetwork.NeuralNetwork([2, 128, 128, 128, 1], RESOLUTION*RESOLUTION, BATCH_SIZE, 0.001)
 
 
 
@@ -34,10 +34,6 @@ count = 0
 running = True
 
 
-if UPSCALE:
-    custom_inp = np.array([[x / 28.0], [y / 28.0]])
-else:
-    custom_inp = np.array([[(x%28) / 28.0, int(x/28) / 28.0] for x in range(28*28)]).T
 
 while running:
     for event in pg.event.get():
@@ -47,11 +43,32 @@ while running:
     screen.fill(background_color)
 
     count += 1
-    inp = np.array([[(x%28) / 28.0, int(x/28) / 28.0] for x in range(28*28)]).T
-    nn.set_input(inp)
+
+
+
+    # BATCH - START
+    batch_input = []
+    batch_output = []
+    for b in range(BATCH_SIZE):
+        index = random.randint(0, RESOLUTION*RESOLUTION - 1)
+        batch_input.append([(index%RESOLUTION) / RESOLUTION, int(index/RESOLUTION) / RESOLUTION])
+        batch_output.append(data[index])
+
+    batch_input = np.array(batch_input).T
+    batch_output = np.array(batch_output).T
+
+    # BATCH - STOP
+
+    #inp = np.array([[(x%28) / 28.0, int(x/28) / 28.0] for x in range(28*28)]).T
+    nn.set_input(batch_input)
     nn.forward()
+
+    nn.backward(batch_output)
+
+
+
     if count >= 100:
-        print('cost: ', np.sum(nn.get_cost(data)))
+        print('cost: ', np.sum(nn.get_cost(batch_output)))
         count = 0
 
 
@@ -69,6 +86,7 @@ while running:
                     pg.draw.rect(screen, (0, val, 0), (x * rect_size, y * rect_size, rect_size, rect_size))
         else:
             rect_size = 20
+            custom_inp = np.array([[(x%28) / 28.0, int(x/28) / 28.0] for x in range(28*28)]).T
 
             nn.set_input(custom_inp)
             nn.forward()
@@ -81,7 +99,6 @@ while running:
 
         pg.display.flip()
 
-    nn.backward(data)
 
 
 pg.quit()

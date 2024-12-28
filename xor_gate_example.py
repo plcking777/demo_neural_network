@@ -19,7 +19,7 @@ train_out_1 = np.array([
 
 
 
-nn = neuralNetwork.NeuralNetwork([2, 5, 5, 1], 2, 0.1)
+nn = neuralNetwork.NeuralNetwork([2, 5, 5, 1], 2, 4, 0.1)
 
 for i in range(10000):
     nn.set_input(train_inp_1)

@@ -7,19 +7,20 @@ class NeuralNetwork:
     Bs = []
     As = []
     Zs = []
-    def __init__(self, layers, epoch, learning_rate):
+    def __init__(self, layers, epoch, batch_size, learning_rate):
         self.layers = layers
         self.epoch = epoch
         self.learning_rate = learning_rate
+        self.batch_size = batch_size
 
         for i in range(len(layers) - 1):
             nodes = layers[i]
             next_nodes = layers[i + 1]
 
-            #self.Ws.append(np.random.rand(next_nodes, nodes) - 0.5)
-            #self.Bs.append(np.random.rand(next_nodes, 1) - 0.5)
-            self.Ws.append(np.random.randn(next_nodes, nodes) * np.sqrt(2 / next_nodes))
-            self.Bs.append(np.random.randn(next_nodes, 1) * np.sqrt(2 / next_nodes))
+            self.Ws.append(np.random.rand(next_nodes, nodes) - 0.5)
+            self.Bs.append(np.random.rand(next_nodes, 1) - 0.5)
+            #self.Ws.append(np.random.randn(next_nodes, nodes) * np.sqrt(2 / next_nodes))
+            #self.Bs.append(np.random.randn(next_nodes, 1) * np.sqrt(2 / next_nodes))
         self.As = [np.array([[]]) for _ in range(len(layers))]
         self.Zs = [np.array([[]]) for _ in range(len(layers) - 1)]
 
